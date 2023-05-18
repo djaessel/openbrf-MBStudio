@@ -17,6 +17,8 @@ jobs:
       run: |
         choco install 7zip curl -y
         choco install visualstudio2017buildtools -y --wait --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK" --force
+        
+        # swy: configuring the msvc environment variables
         Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build"
         
         # swy: https://stackoverflow.com/a/41399983/674685
@@ -36,6 +38,7 @@ jobs:
         Invoke-CmdScript vcvarsall.bat x86
         Pop-Location
         
+        # swy: downloading precompiled versions of qtbase, qttools (for windeployqt) and jom (for a more parallel nmake)
         mkdir _qt
         mkdir _qt_download
         Push-Location _qt_download
@@ -43,10 +46,12 @@ jobs:
         curl.exe -LJ -o qt-tools.7z 'https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_51212/qt.qt5.51212.win32_msvc2017/5.12.12-0-202111241434qttools-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86.7z'
         curl.exe -LJ -o qt-jom.zip  'https://download.qt.io/official_releases/jom/jom.zip'
         
+        # swy: extracting the downloaded qt binaries
         7z x qt-base.7z  '-o../_qt' -y
         7z x qt-tools.7z '-o../_qt' -y
         7z x qt-jom.zip  '-o../_qt' -y
         
+        # swy: turn the qt install from enterprise to foss; remove the licensing checks
         ${qconfig-pri-folder} = '..\_qt\5.12.12\msvc2017\mkspecs\qconfig.pri'
         (Get-Content ${qconfig-pri-folder}).replace('QT_EDITION = Enterprise', 'QT_EDITION = OpenSource') | Set-Content ${qconfig-pri-folder}
         (Get-Content ${qconfig-pri-folder}).replace('QT_LICHECK = licheck.exe', '')                       | Set-Content ${qconfig-pri-folder}
@@ -58,9 +63,12 @@ jobs:
         mkdir _make
         Push-Location _make
         
-        $env:Path += ";..\_qt\;..\_qt\5.12.12\msvc2017\bin\"
+        $env:Path += ";..\_qt\; ..\_qt\5.12.12\msvc2017\bin\"
         
+        # swy: run qmake and generate the msvc nmake makefile
         ..\_qt\5.12.12\msvc2017\bin\qmake ..\openBrf.pro
+        
+        # swy: start the actual build with jom instead of nmake; for speed
         ..\_qt\jom
         Pop-Location
 
