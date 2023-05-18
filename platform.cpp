@@ -25,10 +25,12 @@ FILE* wfopen(const wchar_t* filename, const char* mode) {
 // ==================================================================
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdexcept>
 
 FILE* wfopen(const wchar_t* filename, const char* mode) {
   wchar_t char_mode[50];
-  if (wcstombs(char_mode, mode, 50) == -1) {
+  if (mbstowcs(char_mode, mode, sizeof(char_mode) - 1) == (size_t) -1) {
     throw std::runtime_error("Bad wfopen mode");
   }
   return _wfopen(filename, char_mode);

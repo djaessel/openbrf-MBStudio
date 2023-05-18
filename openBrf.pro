@@ -9,8 +9,15 @@ CONFIG += exceptions
 
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS += -Werror
-VCGLIB = /home/cory/Source/VCGLib
+VCGLIB = dependencies/vgclib-v1.0.1
 QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
+
+*g++* {
+    # swy: shut up the eigen library causing thousands of warnings slowing down gcc/MinGW:
+    #      https://github.com/openscad/openscad/issues/2771
+    QMAKE_CXXFLAGS += -Wno-attributes
+    QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+}
 
 # RC_FILE = openBrf.rc
 TARGET = openBrf
@@ -120,7 +127,7 @@ FORMS += guipanel.ui \
     askLodOptionsDialog.ui \
     askUvTransformDialog.ui \
     askSkelPairDialog.ui
-//INCLUDEPATH += "$$VCGLIB"
+INCLUDEPATH += "$$VCGLIB"
 INCLUDEPATH += "lib3ds-1.3.0"
 INCLUDEPATH += "."
 RESOURCES += resource.qrc
@@ -129,18 +136,37 @@ TRANSLATIONS += translations/openbrf_en.ts
 TRANSLATIONS += translations/openbrf_es.ts
 TRANSLATIONS += translations/openbrf_de.ts
 RC_FILE = openBrf.rc
+
 win32 { 
     DEFINES += NOMINMAX
     DEFINES += _CRT_SECURE_NO_DEPRECATE
 }
-#INCLUDEPATH += "C:\projects\libraries\include"
-# DEFINES += GLEW_STATIC
 
-# SOURCES += "C:\projects\libraries\sources\glew-1.5.3\src\glew.c"
-#LIBS += -L"C:\projects\libraries\lib" \
-LIBS += "-lGLEW"
-LIBS += "-lGLU"
-#   % -lglew32
+win32 {
+    GLEWLIB = dependencies/glew-2.2.0/
+    DEFINES += GLEW_STATIC
+    INCLUDEPATH += "$$GLEWLIB/include"
+    SOURCES += "$$GLEWLIB/src/glew.c"
+    LIBS += -lopengl32 -lglu32
+} else {
+    LIBS += "-lGLEW"
+    LIBS += "-lGLU"
+    LIBS += -lGL -lGLU
+}
+
+# swy: try to compile the MinGW libraries statically as part of the main .exe
+#      instead of shipping them as a bunch of small, separated .dll files.
+win32-g++ {
+    QMAKE_LFLAGS += -static-libgcc -static-libstdc++ -static
+}
+
+# swy: copy the final .exe and all the necessary Qt .dll files into the bin folder
+#      automatically after finishing the compilation and linking.
+win32 {
+    DESTDIR = $$PWD/bin
+    QMAKE_POST_LINK = windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
+}
+
 MOC_DIR = tmp
 UI_DIR = tmp
 
@@ -148,9 +174,6 @@ OTHER_FILES += shaders/bump_fragment.cpp
 OTHER_FILES += shaders/bump_vertex.cpp
 OTHER_FILES += shaders/iron_fragment.cpp
 OTHER_FILES += femininizer.morpher
-
-LIBS += -lGL -lGLU
-#LIBS += -lopengl32 -lglu32
 
 DISTFILES += \
     translations/openbrf_de.ts \
