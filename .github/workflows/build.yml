@@ -16,10 +16,26 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         choco install 7zip curl -y
-        choco install visualstudio2017buildtools -y --package-parameters '--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64'
+        choco install visualstudio2017buildtools -y --wait --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK" --force
         Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build"
-        '& cmd.exe /C "vcvarsall.bat x86 & set" | Foreach-Object { if ($_ -match "(.*?)=(.*)") { Set-Item -force -path "Env:\$($matches[1])" -value "$($matches[2])" } }'
+        
+        # swy: https://stackoverflow.com/a/41399983/674685
+        # Invokes a Cmd.exe shell script and updates the environment.
+        function Invoke-CmdScript {
+          param(
+            [String] $scriptName
+          )
+          $cmdLine = """$scriptName"" $args & set"
+          & $Env:SystemRoot\system32\cmd.exe /c $cmdLine |
+          select-string '^([^=]*)=(.*)$' | foreach-object {
+            $varName = $_.Matches[0].Groups[1].Value
+            $varValue = $_.Matches[0].Groups[2].Value
+            set-item Env:$varName $varValue
+          }
+        }
+        Invoke-CmdScript vcvarsall.bat x86
         Pop-Location
+        
         mkdir _qt
         mkdir _qt_download
         Push-Location _qt_download
@@ -41,6 +57,9 @@ jobs:
       run: |
         mkdir _make
         Push-Location _make
+        
+        $env:Path += ";..\_qt\;..\_qt\5.12.12\msvc2017\bin\"
+        
         ..\_qt\5.12.12\msvc2017\bin\qmake ..\openBrf.pro
         ..\_qt\jom
         Pop-Location
