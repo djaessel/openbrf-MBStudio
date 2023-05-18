@@ -9,7 +9,7 @@ CONFIG += exceptions
 
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS += -Werror
-VCGLIB = dependencies/vgclib # v1.0.1
+VCGLIB = dependencies/vcglib # v1.0.1
 QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
 
 *g++* {
