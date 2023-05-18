@@ -160,10 +160,10 @@ win32-g++ {
     QMAKE_LFLAGS += -static-libgcc -static-libstdc++ -static
 }
 
-# swy: copy the final .exe and all the necessary Qt .dll files into the bin folder
+# swy: copy the final .exe and all the necessary Qt .dll files into the _build folder
 #      automatically after finishing the compilation and linking.
 win32 {
-    DESTDIR = $$PWD/bin
+    DESTDIR = $$PWD/_build
     QMAKE_POST_LINK = windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 

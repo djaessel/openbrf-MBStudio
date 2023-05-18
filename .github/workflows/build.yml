@@ -1,0 +1,52 @@
+name: build
+on:
+  push:
+    branches: [ "master" ]
+    
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install the MSVC build tools
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        choco install 7zip curl -y
+        choco install visualstudio2017buildtools -y --package-parameters '--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64'
+        Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build"
+        '& cmd.exe /C "vcvarsall.bat x86 & set" | Foreach-Object { if ($_ -match "(.*?)=(.*)") { Set-Item -force -path "Env:\$($matches[1])" -value "$($matches[2])" } }'
+        Pop-Location
+        mkdir _qt
+        mkdir _qt_download
+        Push-Location _qt_download
+        curl.exe -LJ -o qt-base.7z  'https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_51212/qt.qt5.51212.win32_msvc2017/5.12.12-0-202111241434qtbase-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86.7z'
+        curl.exe -LJ -o qt-tools.7z 'https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_51212/qt.qt5.51212.win32_msvc2017/5.12.12-0-202111241434qttools-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86.7z'
+        curl.exe -LJ -o qt-jom.zip  'https://download.qt.io/official_releases/jom/jom.zip'
+        
+        7z x qt-base.7z  '-o../_qt' -y
+        7z x qt-tools.7z '-o../_qt' -y
+        7z x qt-jom.zip  '-o../_qt' -y
+        
+        ${qconfig-pri-folder} = '..\_qt\5.12.12\msvc2017\mkspecs\qconfig.pri'
+        (Get-Content ${qconfig-pri-folder}).replace('QT_EDITION = Enterprise', 'QT_EDITION = OpenSource') | Set-Content ${qconfig-pri-folder}
+        (Get-Content ${qconfig-pri-folder}).replace('QT_LICHECK = licheck.exe', '')                       | Set-Content ${qconfig-pri-folder}
+        Pop-Location
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        mkdir _make
+        Push-Location _make
+        ..\_qt\5.12.12\msvc2017\bin\qmake ..\openBrf.pro
+        ..\_qt\jom
+        Pop-Location
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: compiled
+        path: ./_build
+        retention-days: 90
