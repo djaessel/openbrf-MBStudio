@@ -1,0 +1,8 @@
+[submodule "glew"]
+	path = dependencies/glew
+	url = https://github.com/nigels-com/glew
+	# swy: master
+[submodule "vcglib"]
+	path = dependencies/vcglib
+	url = https://github.com/cnr-isti-vclab/vcglib
+	# swy: v1.0.1 tag

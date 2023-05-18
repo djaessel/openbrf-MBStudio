@@ -9,7 +9,7 @@ CONFIG += exceptions
 
 QMAKE_CXXFLAGS += -std=c++0x
 #QMAKE_CXXFLAGS += -Werror
-VCGLIB = dependencies/vgclib-v1.0.1
+VCGLIB = dependencies/vgclib # v1.0.1
 QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
 
 *g++* {
@@ -143,7 +143,7 @@ win32 {
 }
 
 win32 {
-    GLEWLIB = dependencies/glew-2.2.0/
+    GLEWLIB = dependencies/glew # 2.2.0
     DEFINES += GLEW_STATIC
     INCLUDEPATH += "$$GLEWLIB/include"
     SOURCES += "$$GLEWLIB/src/glew.c"
