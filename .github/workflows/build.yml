@@ -15,8 +15,11 @@ jobs:
     - name: Install the MSVC build tools
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
+        # swy: install chocolatey, to make it easy to install other software unattended
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        
         choco install 7zip curl -y
-        choco install visualstudio2017buildtools -y --wait --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK" --force
+        choco install visualstudio2017buildtools -y --wait --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.Windows10SDK.17763" --force
         
         # swy: configuring the msvc environment variables
         Push-Location "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Auxiliary/Build"
@@ -55,6 +58,13 @@ jobs:
         ${qconfig-pri-folder} = '..\_qt\5.12.12\msvc2017\mkspecs\qconfig.pri'
         (Get-Content ${qconfig-pri-folder}).replace('QT_EDITION = Enterprise', 'QT_EDITION = OpenSource') | Set-Content ${qconfig-pri-folder}
         (Get-Content ${qconfig-pri-folder}).replace('QT_LICHECK = licheck.exe', '')                       | Set-Content ${qconfig-pri-folder}
+        
+        # swy: make it find the qt sdk install folder instead of using the default: c:/Users/qt/work/install
+        #      keep in mind that Qt won't read UTF-16-encoded text files (the default for Out-File in PowerShell)
+        #      plus, even if you choose utf8 it writes a binary BOM/byte-order-mark which makes it not read it
+        #      -encoding UTF8NoBOM is only supported on 6+, so use plain ascii, absolutely braindead:
+        #      https://stackoverflow.com/a/55077592/674685
+        "[Paths]"+ "`r`n" +"Prefix = .." | Out-File -encoding ASCII '..\_qt\5.12.12\msvc2017\bin\qt.conf'
         Pop-Location
 
     - name: Build
