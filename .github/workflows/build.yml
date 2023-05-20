@@ -18,8 +18,8 @@ jobs:
         # swy: install chocolatey, to make it easy to install other software unattended
         Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
         
-        choco install 7zip curl -y
-        choco install visualstudio2017buildtools -y --wait --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.Windows10SDK.17763" --force
+        choco install 7zip curl                  -y --wait --no-progress
+        choco install visualstudio2017buildtools -y --wait --no-progress --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.Component.VC.Runtime.UCRTSDK --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.Windows10SDK.17763" --force
         
         # swy: downloading precompiled versions of qtbase, qttools (for windeployqt) and jom (for a more parallel nmake)
         mkdir _qt
@@ -73,13 +73,14 @@ jobs:
         Invoke-CmdScript vcvarsall.bat x86
         Pop-Location
         
+        # swy: configuring the Qt environment variables
         $env:Path += ";..\_qt\; ..\_qt\5.12.12\msvc2017\bin\"
         
         # swy: run qmake and generate the msvc nmake makefile
-        ..\_qt\5.12.12\msvc2017\bin\qmake ..\openBrf.pro
+        & ..\_qt\5.12.12\msvc2017\bin\qmake ..\openBrf.pro
         
         # swy: start the actual build with jom instead of nmake; for speed
-        ..\_qt\jom
+        & ..\_qt\jom
         Pop-Location
 
     - uses: actions/upload-artifact@v3
