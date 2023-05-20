@@ -169,7 +169,7 @@ win32-g++ {
 #      https://stackoverflow.com/a/37462468/674685
 win32 {
     DESTDIR = $$PWD/_build
-    QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
+    QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt --no-system-d3d-compiler --no-compiler-runtime --no-angle --no-opengl-sw $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 
 MOC_DIR = tmp
