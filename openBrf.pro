@@ -7,10 +7,13 @@ QT += xml
 
 CONFIG += exceptions
 
-QMAKE_CXXFLAGS += -std=c++0x
-#QMAKE_CXXFLAGS += -Werror
+*g++* {
+  QMAKE_CXXFLAGS += -std=c++0x
+  #QMAKE_CXXFLAGS += -Werror
+  QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
+}
 VCGLIB = dependencies/vcglib # v1.0.1
-QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
+
 
 *g++* {
     # swy: shut up the eigen library causing thousands of warnings slowing down gcc/MinGW:
@@ -162,9 +165,11 @@ win32-g++ {
 
 # swy: copy the final .exe and all the necessary Qt .dll files into the _build folder
 #      automatically after finishing the compilation and linking.
+#      https://forum.qt.io/topic/127083/using-config-windeployqt/2
+#      https://stackoverflow.com/a/37462468/674685
 win32 {
     DESTDIR = $$PWD/_build
-    QMAKE_POST_LINK = windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
+    QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 
 MOC_DIR = tmp
