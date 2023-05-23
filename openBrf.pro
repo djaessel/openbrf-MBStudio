@@ -7,16 +7,17 @@ QT += xml
 
 CONFIG += exceptions
 
-*g++* {
-  QMAKE_CXXFLAGS += -std=c++0x
-  QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
-}
+
 VCGLIB = dependencies/vcglib # v1.0.1
 
 *g++* {
+    message("Generating makefile for the MinGW version.")
+    QMAKE_CXXFLAGS += -std=c++0x
+    QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
+
     # swy: shut up the eigen library causing thousands of warnings slowing down gcc/MinGW:
     #      https://github.com/openscad/openscad/issues/2771
-    QMAKE_CXXFLAGS += -Wno-attributes -Wno-misleading-indentation
+    QMAKE_CXXFLAGS += -Wno-attributes -Wno-misleading-indentation -Wno-int-in-bool-context
     QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 }
 
@@ -129,7 +130,6 @@ FORMS += guipanel.ui \
     askUvTransformDialog.ui \
     askSkelPairDialog.ui
 INCLUDEPATH += "$$VCGLIB"
-INCLUDEPATH += "lib3ds-1.3.0"
 INCLUDEPATH += "."
 RESOURCES += resource.qrc
 TRANSLATIONS += translations/openbrf_zh.ts
@@ -158,6 +158,7 @@ win32 {
 # swy: try to compile the MinGW libraries statically as part of the main .exe
 #      instead of shipping them as a bunch of small, separated .dll files.
 win32-g++ {
+    message("Linking libgcc and libstd statically.")
     QMAKE_LFLAGS += -static-libgcc -static-libstdc++ -static
 }
 
@@ -171,6 +172,7 @@ win32 {
         MSVC_WINDEPLOY_EXTRA_ARGS = --no-compiler-runtime
     }
 
+    message("Adding step to deploy the DLL files on Windows.")
     DESTDIR = $$PWD/_build
     QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt --no-system-d3d-compiler --no-angle --no-opengl-sw $$MSVC_WINDEPLOY_EXTRA_ARGS $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
