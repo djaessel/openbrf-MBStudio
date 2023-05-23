@@ -9,16 +9,14 @@ CONFIG += exceptions
 
 *g++* {
   QMAKE_CXXFLAGS += -std=c++0x
-  #QMAKE_CXXFLAGS += -Werror
   QMAKE_CXXFLAGS += "-isystem $$VCGLIB"
 }
 VCGLIB = dependencies/vcglib # v1.0.1
 
-
 *g++* {
     # swy: shut up the eigen library causing thousands of warnings slowing down gcc/MinGW:
     #      https://github.com/openscad/openscad/issues/2771
-    QMAKE_CXXFLAGS += -Wno-attributes
+    QMAKE_CXXFLAGS += -Wno-attributes -Wno-misleading-indentation
     QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 }
 
@@ -168,8 +166,13 @@ win32-g++ {
 #      https://forum.qt.io/topic/127083/using-config-windeployqt/2
 #      https://stackoverflow.com/a/37462468/674685
 win32 {
+    # swy: don't ship the vcruntime installer in the visual studio builds, but do ship libgcc, libstd++ and libwinpthread-1 in mingw builds
+    win32-msvc {
+        MSVC_WINDEPLOY_EXTRA_ARGS = --no-compiler-runtime
+    }
+
     DESTDIR = $$PWD/_build
-    QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt --no-system-d3d-compiler --no-compiler-runtime --no-angle --no-opengl-sw $$shell_path($$DESTDIR/$${TARGET}.exe)
+    QMAKE_POST_LINK = $$[QT_INSTALL_BINS]/windeployqt --no-system-d3d-compiler --no-angle --no-opengl-sw $$MSVC_WINDEPLOY_EXTRA_ARGS $$shell_path($$DESTDIR/$${TARGET}.exe)
 }
 
 MOC_DIR = tmp
@@ -185,11 +188,3 @@ DISTFILES += \
     translations/openbrf_en.ts \
     translations/openbrf_es.ts \
     translations/openbrf_zh.ts
-
-
-
-
-
-
-
-
