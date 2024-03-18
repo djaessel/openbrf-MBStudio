@@ -1,4 +1,4 @@
-OpenBRF _by Marco Tarini_
+OpenBRF Library _by Marco Tarini_ _(edited by Johandros)_
 ------------------------
 
 A modding tool used to view, edit and convert the proprietary _Binary Resource files_ (BRFs) loaded by the popular «Mount&Blade» and «Mount&Blade: Warband» games.
@@ -36,3 +36,20 @@ https://forums.taleworlds.com/index.php?topic=72279.0
 Alternatively there's also a ready-to-use _AUR_ package that might come in handy if you are using _Arch Linux_ (helpfully provided by Swyter):
 
 https://aur.archlinux.org/packages/openbrf/
+
+
+## Johandros/djaessel Notes
+
+This is the standalone Linux version of openBrf (library), that I altered to use it with my tool MB-Studio.
+  
+https://github.com/djaessel/MB-Studio
+  
+So if you want to get the Windows version, just check out that repo.  
+  
+The purpose of this library is, to have a 3D view to show certain characters, items and 3D models in general.
+
+### Usage
+
+TODO: add usage cases here
+TODO: create full test scenario like in MB-Studio
+
