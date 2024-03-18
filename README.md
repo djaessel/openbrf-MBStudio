@@ -23,7 +23,7 @@ General Public License_, according to the dicussion forum:
 
 https://forums.taleworlds.com/index.php?topic=72279.0
 
-### Build instructions for Linux:
+### Build instructions for Linux (edited):
 
     # Now requires Qt5!
     qmake -makefile openBrf.pro
@@ -31,11 +31,7 @@ https://forums.taleworlds.com/index.php?topic=72279.0
     
     # run it overriding the float dot notation so that it can load
     # `carry_positions.txt` in other languages other than English
-    env LC_NUMERIC=C ./openBrf
-
-Alternatively there's also a ready-to-use _AUR_ package that might come in handy if you are using _Arch Linux_ (helpfully provided by Swyter):
-
-https://aur.archlinux.org/packages/openbrf/
+    env LC_NUMERIC=C python testloadpy.py
 
 
 ## Johandros/djaessel Notes
