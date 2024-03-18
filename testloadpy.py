@@ -31,11 +31,13 @@ def extra(lib):
 
     name = b"club"
     kind = 0
-    lib.SelectItemByNameAndKind(name, kind)
+    res = lib.SelectItemByNameAndKind(name, kind)
+    print("RESULT:", res)
 
     time.sleep(5)
 
-    lib.SelectItemByNameAndKind(name, kind)
+    res = lib.SelectItemByNameAndKindFromCurFile(name, kind)
+    print("RESULT:", res)
 
 
 main()
