@@ -827,10 +827,10 @@ void MainWindow::openModuleIniFile(){
 }
 
 QString MainWindow::referenceFilename(/*bool modSpecific*/) const{
-	QString refFile = QCoreApplication::applicationDirPath() + "/reference.brf";
-	//if (!modSpecific) refFile = QCoreApplication::applicationDirPath() + "/reference.brf";
+    QString refFile = QCoreApplication::applicationDirPath() + "/reference.brf";
+    //if (!modSpecific) refFile = QCoreApplication::applicationDirPath() + "/reference.brf";
 	//else refFile = modPath() + "/reference.brf";
-	return refFile.replace("/","\\");
+    return refFile.replace("/","\\");
 }
 
 // just a replacement for reference data: from "skinA_(...)" to "skinA.(...)
@@ -858,13 +858,13 @@ bool MainWindow::refreshReference(){
 	}
 
     //MessageBoxA(NULL, QString("ERROR: REFERENCE_PATH_NOT_FOUND\nReference Path: " + fn).toStdString().c_str(), "ERROR", MB_ICONERROR);
-    QMessageBox msgBox;
-    msgBox.setText("ERROR: REFERENCE_PATH_NOT_FOUND\nReference Path: " + fn);
-    msgBox.setInformativeText("Error!");
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    /*int ret = */msgBox.exec();
+    //QMessageBox msgBox;
+    //msgBox.setText("ERROR: REFERENCE_PATH_NOT_FOUND\nReference Path: " + fn);
+    //msgBox.setInformativeText("Error!");
+    //msgBox.setIcon(QMessageBox::Critical);
+    //msgBox.setStandardButtons(QMessageBox::Ok);
+    //msgBox.setDefaultButton(QMessageBox::Ok);
+    ///*int ret = */msgBox.exec();
 
 	loadedModReference = false;
 
