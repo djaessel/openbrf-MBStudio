@@ -1740,6 +1740,10 @@ void BrfMesh::SetName(const char* st){
 	AnalyzeName();
 }
 
+void BrfMesh::SetMaterial(const char* st){
+  sprintf(material,"%s",st);
+}
+
 void BrfMesh::DeleteSelected(){
   printf("  there are %3ld faces, %3ld points, %3ld vertices\n",face.size(), frame[0].pos.size(), vert.size());
 

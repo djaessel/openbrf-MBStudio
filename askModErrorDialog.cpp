@@ -5,7 +5,7 @@
 
 #include "brfData.h"
 #include "iniData.h"
-
+#include "mainwindow.h"
 #include <QPushButton>
 
 void AskModErrorDialog::refresh(){
@@ -72,10 +72,9 @@ void AskModErrorDialog::getOptions(bool *b, int *i,QString *st){
   *st=QString("%1").arg(searchString);
 }
 
-
 void AskModErrorDialog::linkClicked(const QUrl&l){
   QString s = l.toString();
-  sscanf(s.toLatin1().data(), "#%d.%d.%d",&i, &j, &kind);
+  sscanf(s.toLatin1().data(), "#%d.%d.%d", &i, &j, &kind);
   accept();
 }
 
@@ -104,6 +103,7 @@ void AskModErrorDialog::performSearch(){
   if ((searchString.length()>=3)
       ||(searchToken==ANIMATION)||(searchToken==SKELETON)||(searchToken==SHADER)) {
     m_ui->textBrowser->setText(inidata->searchAllNames(searchString,searchCommonRes,searchToken));
+	//m_ui->textBrowser->setText(inidata->searchOneName(searchString, searchCommonRes, searchToken));
   } else {
     m_ui->textBrowser->setText(tr("<i>[ready]</i>"));
   }

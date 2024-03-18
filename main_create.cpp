@@ -740,12 +740,16 @@ void MainWindow::createActions()
 
 }
 
-void MainWindow::createMiniViewOptions(){
+void MainWindow::createMiniViewOptions()
+{
 	QWidget* w = new QWidget(this);
 	w->setLayout(new QBoxLayout(QBoxLayout::LeftToRight));
 	w->layout()->setMargin(0);
 	w->layout()->setAlignment(w,Qt::AlignRight);
 	w->layout()->setSpacing(0);
+
+	//if (debugMode)
+	//  MessageBoxA(NULL, "createMiniViewOptions() - TEST 2", "INFO", 0); // WORKING
 
 	QPushButton* viewmode[3];
 	QButtonGroup* bg=new QButtonGroup(this);
@@ -757,11 +761,17 @@ void MainWindow::createMiniViewOptions(){
 	viewmode[2]->setStatusTip(tr("Scene mode: navigate with mouse and WASD (levitate with wheel, zoom with shift)"));
 	bg->setExclusive(true);
 
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 3", "INFO", 0); // WORKING
+
 	comboViewmodeSelector = new QWidget(this);
 	comboViewmodeSelector->setLayout(new QBoxLayout(QBoxLayout::LeftToRight));
 	comboViewmodeSelector->layout()->setMargin(0);
 	comboViewmodeSelector->layout()->setAlignment(w,Qt::AlignRight);
 	comboViewmodeSelector->layout()->setSpacing(0);
+
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 4", "INFO", 0); // WORKING
 
 	QPushButton* viewmodemult[3];
 	comboViewmodeBG=new QButtonGroup(this);
@@ -775,7 +785,8 @@ void MainWindow::createMiniViewOptions(){
 	QLabel* viewmodemultLabel = new QLabel(tr("mult-view:"));
 	comboViewmodeSelector->layout()->addWidget(viewmodemultLabel);
 
-
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 5", "INFO", 0); // WORKING
 
 	for (int i=0; i<3; i++) {
 		viewmodemult[i]->setCheckable(true);
@@ -790,11 +801,19 @@ void MainWindow::createMiniViewOptions(){
 		comboViewmodeBG->addButton(viewmodemult[i],i);
 	}
 
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 6", "INFO", 0); // WORKING
+
 	QLabel* viewmodeLabel = new QLabel(tr("view-mode:"));
 	QFont f =viewmodeLabel->font(); f.setPixelSize(10); f.setItalic(true);
 	viewmodeLabel->setFont(f);
 	viewmodemultLabel->setFont(f);
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 7", "INFO", 0); // WORKING
 	w->layout()->addWidget(viewmodeLabel);
+	
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 8", "INFO", 0); // WORKING
 
 	for (int i=0; i<3; i++) {
 		viewmode[i]->setCheckable(true);
@@ -810,12 +829,20 @@ void MainWindow::createMiniViewOptions(){
 		//statusBar()->addPermanentWidget(viewmode[i]);
 	}
 
-	QWidget* sep = new QWidget(this);
-	statusBar()->addPermanentWidget(sep);
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 9", "INFO", 0); // WORKING
 
-	statusBar()->addPermanentWidget(comboViewmodeSelector);
-	statusBar()->addPermanentWidget(w);
-	comboViewmodeSelector->setVisible(false);
+	QWidget* sep = new QWidget(this); // ERROR ???
+	statusBar()->addPermanentWidget(sep); // ERROR ???
+
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 10", "INFO", 0); // WOKRING (?)
+
+	statusBar()->addPermanentWidget(comboViewmodeSelector); // ERROR ???
+	statusBar()->addPermanentWidget(w); // ERROR ???
+	//comboViewmodeSelector->setVisible(false);
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 11", "INFO", 0); // NOT CLEAR
 	/*
 	QActionGroup* viewmode=new QActionGroup(this);
 	viewmode->addAction("Default");
@@ -827,6 +854,9 @@ void MainWindow::createMiniViewOptions(){
 	*/
 	modStatus = new QLabel("Mod",this);
 	statusBar()->addPermanentWidget(modStatus);
+
+	//if (debugMode)
+	//	MessageBoxA(NULL, "createMiniViewOptions() - TEST 12", "INFO", 0); // NOT CLEAR
 
 	connect(bg,SIGNAL(buttonClicked(int)),glWidget,SLOT(setViewmode(int)));
     connect(comboViewmodeBG,SIGNAL(buttonClicked(int)),this,SLOT(setViewmodeMult(int)));
@@ -892,18 +922,16 @@ void MainWindow::createConnections(){
 	connect(guiPanel->ui->rbAlphaColor      ,SIGNAL(clicked()),glWidget,SLOT(showAlphaPurple()));
 	connect(guiPanel->ui->rbAlphaNo         ,SIGNAL(clicked()),glWidget,SLOT(showAlphaNo()));
 	connect(guiPanel->ui->rbAlphaTransparent,SIGNAL(clicked()),glWidget,SLOT(showAlphaTransparent()));
-	connect(guiPanel->ui->boxMaterial    ,SIGNAL(textChanged(QString)),
-	        this,SLOT(onChangeMeshMaterial(QString)));
-	connect(guiPanel->ui->boxMaterial    ,SIGNAL(textChanged(QString)),
-            guiPanel,SLOT(updateSingleMaterial(QString)));
-	connect(guiPanel->ui->rulerSlid, SIGNAL(sliderMoved(int)),glWidget,SLOT(setRulerLenght(int)));
-	connect(guiPanel->ui->rulerSpin, SIGNAL(valueChanged(int)),glWidget,SLOT(setRulerLenght(int)));
-	connect(guiPanel->ui->labMatName, SIGNAL(linkActivated(QString)), this, SLOT(navigateRight()) ) ;
-	connect(guiPanel, SIGNAL(followLink()), this, SLOT(navigateRight()) ) ;
-	connect(guiPanel->ui->labBackM, SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
-	connect(guiPanel->ui->labBackT, SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
-	connect(guiPanel->ui->labBackS, SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
-	connect(guiPanel->ui->labShaFallback, SIGNAL(linkActivated(QString)), this, SLOT(navigateRight()) ) ;
+	connect(guiPanel->ui->boxMaterial		,SIGNAL(textChanged(QString)), this,SLOT(onChangeMeshMaterial(QString)));
+	connect(guiPanel->ui->boxMaterial		,SIGNAL(textChanged(QString)), guiPanel,SLOT(updateSingleMaterial(QString)));
+	connect(guiPanel->ui->rulerSlid			,SIGNAL(sliderMoved(int)),glWidget,SLOT(setRulerLenght(int)));
+	connect(guiPanel->ui->rulerSpin			,SIGNAL(valueChanged(int)),glWidget,SLOT(setRulerLenght(int)));
+	connect(guiPanel->ui->labMatName		,SIGNAL(linkActivated(QString)), this, SLOT(navigateRight()) ) ;
+	connect(guiPanel						,SIGNAL(followLink()), this, SLOT(navigateRight()) ) ;
+	connect(guiPanel->ui->labBackM			,SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
+	connect(guiPanel->ui->labBackT			,SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
+	connect(guiPanel->ui->labBackS			,SIGNAL(linkActivated(QString)), this, SLOT(navigateLeft()) ) ;
+	connect(guiPanel->ui->labShaFallback	,SIGNAL(linkActivated(QString)), this, SLOT(navigateRight()) ) ;
 
 	// edit material
 	connect(guiPanel->ui->leMatR,SIGNAL(textEdited(QString)), this, SLOT(updateDataMaterial()));

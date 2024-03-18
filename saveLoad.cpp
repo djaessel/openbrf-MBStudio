@@ -5,7 +5,6 @@
 #include <string.h>
 //#include <strings>
 #include <vector>
-#include <stdexcept>
 
 #include <vcg/space/point4.h>
 #include <vcg/space/point3.h>
@@ -77,14 +76,14 @@ void SaveVector(FILE *f,const std::vector<Point3f> &v){
 
 bool LoadStringMaybe(FILE *f, char *st, const char *ifnot){
   unsigned int x;
-  if (fread(&x, 4, 1,  f) != 1) throw std::runtime_error("Read 1 in LoadStringMaybe() failed.");
+  fread(&x, 4, 1,  f);
   if (x<99 && x>0) {
-    if (fread(st, 1, x, f) != x) throw std::runtime_error("Read 2 in LoadStringMaybe() failed.");
+    fread(st, 1, x, f);
     st[x]=0;
     return true;
   } else {
     fseek(f,-4,SEEK_CUR);
-    sprintf(st,"%s",ifnot);
+    sprintf(st,ifnot);
     return false;
   }
 
@@ -92,10 +91,10 @@ bool LoadStringMaybe(FILE *f, char *st, const char *ifnot){
 
 bool LoadString(FILE *f, char *st){
   unsigned int x;
-  if (fread(&x, 4, 1,  f) != 1) throw std::runtime_error("Read 1 in LoadString() failed.");
+  fread(&x, 4, 1,  f);
   if (x>=256) return false;
 
-  if (fread(st, 1, x, f) != x) throw std::runtime_error("Read 2 in LoadString() failed.");
+  fread(st, 1, x, f);
   st[x]=0;
   
  //printf("\"%s\"...\n",st);
@@ -103,27 +102,27 @@ bool LoadString(FILE *f, char *st){
 }
 
 void LoadInt(FILE *f, int &i){
-  if (fread(&i, 4, 1,  f) != 1) throw std::runtime_error("Read in LoadInt() failed.");
+  fread(&i, 4, 1,  f);
   //printf("%d ",i);
 }
 
 
 void LoadByte(FILE *f, unsigned char &i){
-  if (fread(&i, 1, 1,  f) != 1) throw std::runtime_error("Read in LoadByte() failed.");
+  fread(&i, 1, 1,  f);
   //printf("%d ",i);
 }
 
 void LoadFloat(FILE *f, float &x){
-  if (fread(&x, 4, 1,  f) != 1) throw std::runtime_error("Read in LoadFloat() failed.");
+  fread(&x, 4, 1,  f);
 }
 
 void LoadUint(FILE *f, unsigned int &x){
-  if (fread(&x, 4, 1,  f) != 1) throw std::runtime_error("Read in LoadUint() failed.");
+  fread(&x, 4, 1,  f);
   //printf("%ud ",x);
 }
 
 void LoadShort(FILE *f, short int &x){
-  if (fread(&x, 2, 1,  f) != 1) throw std::runtime_error("Read in LoadShort() failed.");
+  fread(&x, 2, 1,  f);
   //printf("%ud ",x);
 }
 

@@ -569,8 +569,7 @@ std::vector<int> Selector::allSelected() const{
 QModelIndexList Selector::selectedList() const{
 	if (!this->currentWidget()) return QModelIndexList();
 	return
-	    ((QListView*)(this->currentWidget()))
-	    ->selectionModel()->selectedIndexes();
+	    ((QListView*)(this->currentWidget()))->selectionModel()->selectedIndexes();
 }
 
 int Selector::onlySelected(int kind) const{
@@ -599,7 +598,8 @@ void Selector::updateData(const BrfData &data){
 
 void Selector::selectAll(){
 	int kind = currentTabName();
-    if (!(kind>=0 && kind<N_TOKEN) ) return;
+    if (!(kind >= 0 && kind < N_TOKEN))
+		return;
 	QListView* c=tab[kind];
 	MyTableModel* m = tableModel[kind];
 
@@ -914,17 +914,23 @@ void Selector::setIniData(const IniData *data, int fi){
 }
 
 template<class BrfType>
-void Selector::addBrfTab(const vector<BrfType>  &v){
-
+void Selector::addBrfTab(const vector<BrfType>  &v)
+{
 	int ti = BrfType::tokenIndex();
 
 	tableModel[ti]->clear();
 	if (v.size()!=0) {
-
-		for (unsigned int k=0; k<v.size(); k++) {
+		for (unsigned int k=0; k<v.size(); k++) 
+		{
 			tableModel[ti]->vec.push_back( QString( v[k].name ) );
-
+			//std::string s = QString(v[k].name).toStdString();
+			//MessageBoxA(NULL, s.c_str(), "TEST", 0);
 		}
+		/*ADDED BY JOHANDROS - JUST FOR TESTING ROWS!*/
+		/*std::string s = std::to_string(tableModel[ti]->rowCount(QModelIndex()));
+		char const *pchar = s.c_str();  //use char const* as target type
+		MessageBoxA(NULL, pchar, "TEST", 0);
+		/*ADDED BY JOHANDROS - JUST FOR TESTING ROWS!*/
 		if (iniData && (iniData->updated>=4) && (!iniDataWaitsSaving)) {
 			for (unsigned int k=0; k<v.size(); k++) {
 				ObjCoord oc(iniFileIndex,k,ti);

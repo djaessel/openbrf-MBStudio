@@ -1030,7 +1030,7 @@ void GLWidget::setDummyNormTexture(){
 
 bool GLWidget::fixTextureFormat(QString st){
 
-	FILE* f = wfopen(st.toStdWString().c_str(),"rb");
+    FILE* f = fopen(st.toStdString().c_str(),"rb");
 	if (!f) return false;
 	unsigned int h[22]; // header
 	if (fread(h,4 , 22,f) != 22) throw std::runtime_error("Read 1 in fixTextureFormat() failed!"); // 4 = sizeof uint

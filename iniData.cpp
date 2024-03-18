@@ -3,7 +3,9 @@
 #include <QtCore>
 #include <math.h>
 #include <QTextBrowser>
+#include <QMessageBox>
 
+#include "mainwindow.h"
 #include "brfData.h"
 #include "iniData.h"
 
@@ -22,7 +24,7 @@ const char* txtFileName[TXTFILE_NONE+1] = {
   "scenes.txt",           // TXTFILE_SCENES,
   "[ERROR]",              // N_TXTFILES,
   "[core system]",        // TXTFILE_CORE,
-  "[ERROR]",        //TXTFILE_NONE,
+  "[ERROR]",			  // TXTFILE_NONE,
 
 };
 
@@ -186,7 +188,7 @@ public:
   // reads the n^th int token from last read line
   long long longT(int n) throw (int){
     long long num;
-		int k=sscanf(stringT(n),"%lld",&num);
+		int k=sscanf(stringT(n),"%ld",&num);
     if (k!=1) error(QTextBrowser::tr("expected number istead of '%1' (token %2)").arg(stringT(n)).arg(n));
     return num;
   }
@@ -635,16 +637,12 @@ bool IniData::readModuleTxts(const QString &pathMod, const QString& pathData){
       tf.close();
     }
 
-
   } catch (int) {
     errorStringOnScan = QString(tf.errorString);
     return false;
   }
 
-
   return true;
-
-
 }
 
 
@@ -716,8 +714,6 @@ void IniData::checkFile(int i, int j, int kind, char* usedFile, QDir *d0, QDir *
 
 }
 
-
-
 template <class T>
 bool IniData::checkDuplicated(std::vector<T> &v, int j, int maxErr){
   int kind = T::tokenIndex();
@@ -738,15 +734,55 @@ bool IniData::checkDuplicated(std::vector<T> &v, int j, int maxErr){
 }
 
 template <class T>
-void IniData::searchAllNamesV(const QString &s, int t,const std::vector<T> &v, int j, QString &res) const{
+void IniData::searchAllNamesV(const QString &s, int t, const vector<T> &v, int j, QString &res) const{
   int kind = T::tokenIndex();
   if (t!=-1 && t!=kind) return;
-  for (unsigned int i=0; i<v.size(); i++) {
-
+  for (unsigned int i=0; i<v.size(); i++)
     if (QString(v[i].name).contains(s,Qt::CaseInsensitive))
-      res+=link(j,i,kind)+"<br>";
+      res += link(j,i,kind)+"<br>";
+}
 
-  }
+template <class T>
+void IniData::searchNameInV(const QString &s, int type, const vector<T> &v, int j, vector<vector<int>> &foundings) const {
+	int kind = T::tokenIndex();
+	if (/*type != -1 && */type != kind) return;//what is with -1?
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		if (QString(v[i].name).split('.')[0] == s)
+		{
+			//MessageBoxA(NULL, QString(QString(v[i].name) + " : " + s).toStdString().c_str(), "searchNameInV", 0);
+			vector<int> found;
+			found.push_back(j);
+			found.push_back(i);
+			found.push_back(kind);
+			foundings.push_back(found);
+		}
+	}
+}
+
+template <class T>
+void IniData::getVecAllNames(const vector<T> &v, vector<wstring> &allNames) const{
+	for (size_t j = 0; j < v.size(); j++) {
+		allNames.push_back(QString(v[j].name).toStdWString());
+	}
+}
+
+void IniData::getTypeAllNames(int type, vector<wstring> &allNames, bool commonRes) const{
+	for (size_t i = 0; i < file.size(); i++) {
+		if ((origin[i] == COMMON_RES && commonRes) || (origin[i] != COMMON_RES)) {
+			switch (type)
+			{
+				case TEXTURE: getVecAllNames(file[i].texture, allNames); break;
+				case SHADER: getVecAllNames(file[i].shader, allNames); break;
+				case MATERIAL: getVecAllNames(file[i].material, allNames); break;
+				case SKELETON: getVecAllNames(file[i].skeleton, allNames); break;
+				case ANIMATION: getVecAllNames(file[i].animation, allNames); break;
+				case BODY: getVecAllNames(file[i].body, allNames); break;
+				case MESH: getVecAllNames(file[i].mesh, allNames);//break;
+				default: break;
+			}
+		}
+	}
 }
 
 void IniData::checkUses(int i, int j, int kind, char* usedName, int usedKind){
@@ -977,24 +1013,61 @@ bool IniData::findErrors(int maxErr){
 
 }
 
-QString IniData::searchAllNames(const QString &s, bool cr, int to) const{
+typedef vector<int> IntArray;
+vector<IntArray> IniData::searchOneName(const QString &s, int type, bool cr) const {
+
+	int fileSize = (int)file.size();
+	vector<IntArray> indices;
+	
+	if (type >= MESH && type <= BODY) {
+		for (int i = 0; i < fileSize; i++) {
+			if (origin[i] == MODULE_RES || cr) {
+				switch (type)
+				{
+					case MESH: searchNameInV(s, type, file[i].mesh, i, indices); break;
+					case TEXTURE: searchNameInV(s, type, file[i].texture, i, indices); break;
+					case SHADER: searchNameInV(s, type, file[i].shader, i, indices); break;
+					case MATERIAL: searchNameInV(s, type, file[i].material, i, indices); break;
+					case SKELETON: searchNameInV(s, type, file[i].skeleton, i, indices); break;
+					case ANIMATION: searchNameInV(s, type, file[i].animation, i, indices); break;
+					case BODY: searchNameInV(s, type, file[i].body, i, indices);// break;
+					default: break;
+				}
+			}
+		}
+	}
+	else {
+        //MessageBoxA(NULL, "UNHANDLED_EXCEPTION - INVALID_KIND_FOR_SEARCH!", "ERROR", MB_ICONERROR); // WINDOWS ONLY!!!
+        QMessageBox msgBox;
+        msgBox.setText("UNHANDLED_EXCEPTION - INVALID_KIND_FOR_SEARCH!");
+        msgBox.setInformativeText("Error!");
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        /*int ret = */msgBox.exec();
+	}
+
+	return indices;
+}
+
+QString IniData::searchAllNames(const QString &s, bool cr, int to) const {
   QString res;
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  int fileSize = (int)file.size();
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].texture,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].shader,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].material,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].mesh,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].body,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].skeleton,i,res);
-  for (int i=0; i<(int)file.size(); i++) if (origin[i]==MODULE_RES || cr)
+  for (int i=0; i<fileSize; i++) if (origin[i]==MODULE_RES || cr)
     searchAllNamesV(s,to,file[i].animation,i,res);
   if (res.isEmpty()) res+=QTextBrowser::tr("<i>[0 results]</i>");
-
   return res;
 }
 

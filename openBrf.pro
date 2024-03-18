@@ -19,11 +19,15 @@ VCGLIB = dependencies/vcglib # v1.0.1
     #      https://github.com/openscad/openscad/issues/2771
     QMAKE_CXXFLAGS += -Wno-attributes -Wno-misleading-indentation -Wno-int-in-bool-context
     QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+
+    # Johandros make shared library
+    QMAKE_LFLAGS += -fPIC -shared #-Wl -soname,libopenBrf.so
 }
 
 # RC_FILE = openBrf.rc
 TARGET = openBrf
-TEMPLATE = app
+TEMPLATE = lib
+DEFINES += OPENBRF_LIBRARY
 SOURCES += main.cpp \
     mainwindow.cpp \
     glwidgets.cpp \
@@ -71,6 +75,7 @@ SOURCES += main.cpp \
     myselectionmodel.cpp
 HEADERS += mainwindow.h \
     glwidgets.h \
+    openBrf_global.h \
     saveLoad.h \
     brfMesh.h \
     brfData.h \
@@ -95,6 +100,7 @@ HEADERS += mainwindow.h \
     iniData.h \
     askModErrorDialog.h \
     ioMB.h \
+    platform.h \
     askTransformDialog.h \
     bindTexturePatch.h \
     ddsData.h \

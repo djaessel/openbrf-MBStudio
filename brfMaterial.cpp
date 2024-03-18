@@ -21,7 +21,7 @@ void BrfMaterial::SetDefault(){
   flags = 0;
   //renderOrder = 0;
   sprintf(shader,"simple_shader");
-  sprintf(diffuseA,"%s",name);
+  sprintf(diffuseA,name);
   sprintf(diffuseB,"none");
   sprintf(bump,"none");
   sprintf(enviro,"none");

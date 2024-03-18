@@ -16,7 +16,7 @@
 #include "guipanel.h"
 #include "brfHitBox.h"
 #include "carryPosition.h"
-
+#include "openBrf_global.h"
 
 class AskTransformDialog;
 class AskUvTransformDialog;
@@ -34,8 +34,13 @@ struct UndoLevel {
 	// the status:
 	BrfData data;
 	bool needsBeSaved;
-
 };
+
+/*DLL_EXPORT class ExportClass 
+{
+public:
+	
+};*/
 
 class MainWindow : public QMainWindow
 {
@@ -45,6 +50,33 @@ public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+	void createFileIfNotExists(const QString& filePath);
+
+    void addMeshByNameToXViewMesh(char* meshName, int bone = 0, int skeleton = 0, int carryPosition = -1/*, bool isAtOrigin = true*/, bool mirror = false, char* material = NULL, uint vertColor = 0);
+    void addLastSelectedToXViewMesh(int bone = 0, int skeleton = 0, int carryPosition = -1/*, bool isAtOrigin = true*/, bool mirror = false, char* material = NULL, uint vertColor = 0);
+
+	bool hasTextQLineEdit(QLineEdit* le);
+
+	void copyCurMeshToMod(QString modName);
+	void addCurFocusedTexture(vector<BrfTexture> &textures, vector<vector<BrfTexture>> &allTextures);
+	void getSelectedMeshsAllData(vector<BrfMesh> &meshs, vector<BrfMaterial> &materials, vector<BrfShader> &shaders, vector<vector<BrfTexture>> &allTextures);
+	void addMeshsAllDataToMod(QString modName, vector<BrfMesh> &meshs, vector<BrfMaterial> &materials, vector<BrfShader> &shaders, vector<vector<BrfTexture>> &allTextures);
+
+	void getAllModuleNames(vector<wstring> &allNames);
+	void getAllMeshNames(vector<vector<wstring>> &allNames, bool commonRes = false);
+	void getCurAllMeshNames(vector<wstring> &allNames, bool commonRes = false);
+
+	void removeMeshByNameFromXViewMesh(char* meshName);
+	void removeLastSelectedFromXViewMesh();
+	void showTroop3DPreview(bool forceUpdate = false);
+	//void clearTroop3DPreview();
+	void clearTempTroop3DPreviewMeshes();
+
+	int GetBrfMeshIndexByName(char* name);
+
+	bool hasDependencyProblems();
+	bool saveAsSilent(const QString& fileName, bool isWarband);
+
 	int loadModAndDump(QString modpath, QString file);
 
 	int GetFirstUnusedRefLetter() const;
@@ -52,8 +84,16 @@ public:
 
 	static int getLanguageOption();
 	QString getNextTranslatorFilename(){return nextTranlationFilename;};
-
+	
 	void setUseAlphaCommands(bool mode);
+
+	void selectTypeAndIndex(int type, int index);
+	void selectCurManyIndicesByList(vector<int> idxs);
+	void selectCurManyIndices(int sIdx, int end);
+	vector<char*> getMeshNames();
+	bool searchIniExplicit(QString name, int type, bool cr = true);
+	void setModPathExternal(string modPath);
+
 private:
 	BrfData brfdata;
 	BrfData reference;
@@ -264,7 +304,7 @@ private slots:
 	bool navigateUp();
 	bool navigateDown();
 	bool searchBrf();
-	void refreshReference();
+	bool refreshReference();
 	bool refreshIni();
 	bool checkIni();
 	bool searchIni();
@@ -341,6 +381,7 @@ private:
 	QString mabPath;
 	QString modName;
 	QString lastSkeletonBodiesXmlPath;
+	QString modulesPath() const;
 	QString modPath() const;
 	QString lastSearchString;
 	bool usingWarband;
@@ -370,7 +411,8 @@ private:
 	template<class BrfType> void getAllFlags(const vector<BrfType> &v, unsigned int &orr, unsigned int &andd);
 	template<class BrfType> bool setAllFlags(vector<BrfType> &v, unsigned int toZero, unsigned int toOne);
 
-	bool makeMeshSkinned( BrfMesh &m, bool becauseAddToRef , bool askUserAgain );
+	bool makeMeshSkinned(BrfMesh &m, bool becauseAddToRef , bool askUserAgain);
+	bool makeMeshSkinned(BrfMesh &m, int bone, int skeleton, int carryPosition, bool isAtOrigin = true);
 
 	bool mustOverwriteColors(); // if false, must multiply colors instead
 
@@ -619,7 +661,7 @@ private:
 	QString senderText() const; // just a hack: returns the text of command being exectued:
 
 	bool loadedModReference;
-	QString referenceFilename(bool modSpecific) const;
+	QString referenceFilename(/*bool modSpecific*/) const;
 
 	// generic importers
 	bool _importCollisionBody(bool reimportExisting);

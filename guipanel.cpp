@@ -292,11 +292,9 @@ GuiPanel::GuiPanel(QWidget *parent, IniData &id) :
   ui->generalView->setVisible(false);
   ui->vertexData->setVisible(false);
 
-
   ui->lvTextAcc->setModel( new TextureAccessModel(this) );
   ui->lvBodyPart->setModel( new BodyPartModel(this) );
   ui->lvBones->setModel( new BodyPartModel(this) );
-
 
   //ui->frameNumber->setBackgroundRole(QPalette::Foreground);
   //ui->frameNumberAni->setBackgroundRole(QPalette::Foreground);
@@ -352,7 +350,6 @@ GuiPanel::GuiPanel(QWidget *parent, IniData &id) :
   connect(ui->lvBones->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
           this, SLOT(updateSelectedBone()));
 
-
   // skeleton direct editing
   connect(ui->editHbRange, SIGNAL(actionTriggered(int)),this,SLOT(onEditHitbox(int)));
   connect(ui->editHbLenTop, SIGNAL(actionTriggered(int)),this,SLOT(onEditHitbox(int)));
@@ -388,7 +385,6 @@ GuiPanel::GuiPanel(QWidget *parent, IniData &id) :
 
   connect(ui->cbFloatingProbe,SIGNAL(toggled(bool)),parent,SLOT(activateFloatingProbe(bool)));
   connect(ui->cbRuler,SIGNAL(toggled(bool)),parent,SLOT(activateRuler(bool)));
-
 }
 
 void GuiPanel::setEditingVertexData(bool mode){
@@ -400,7 +396,6 @@ void GuiPanel::setEditingVertexData(bool mode){
 
 	ui->vertexData->setVisible( mode );
 	ui->meshData->setVisible( !mode );
-
 }
 
 
@@ -1271,7 +1266,7 @@ void GuiPanel::setNavigationStackDepth(int i){
   ui->labBackS->setVisible(i>1);
 }
 
-void GuiPanel::on_listView_customContextMenuRequested(QPoint /*pos*/)
+void GuiPanel::on_listView_customContextMenuRequested(QPoint pos)
 {
   return;
   QMenu menu(this);

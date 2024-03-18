@@ -708,7 +708,7 @@ bool MainWindow::reimportAnimation(){
 
 
 
-bool MainWindow::_importStaticMesh(QString /*s*/, std::vector<BrfMesh> &mV, std::vector<bool> &wasMultipleMatV, bool onlyOneFile){
+bool MainWindow::_importStaticMesh(QString s, std::vector<BrfMesh> &mV, std::vector<bool> &wasMultipleMatV, bool onlyOneFile){
   QStringList fnList = askImportFilenames(
     tr("mesh file ("
       "*.obj "
@@ -848,7 +848,7 @@ bool MainWindow::reimportMesh(){
 	BrfMesh &newMesh = m[0];
 
 	//if (!VcgMesh::gotMaterialName()) // let's do that anyway
-        sprintf(newMesh.material,"%s",oldMesh.material);
+  sprintf(newMesh.material,oldMesh.material);
 
 	if (!VcgMesh::gotColor()) newMesh.CopyVertColors(oldMesh);
 
@@ -961,7 +961,7 @@ bool MainWindow::importMovingMeshFrame(){
     statusBar()->showMessage(tr("Import failed"),5000);
     return false;
   }
-  //bool allOk = true;
+  bool allOk = true;
   int N = m.size();
   for (int h=0; h<N; h++) {
     bool res=false;
@@ -972,7 +972,7 @@ bool MainWindow::importMovingMeshFrame(){
           .arg(m[h].name)
           ,7000
       );
-      //allOk = false;
+      allOk = false;
     }
     if (assembleAniMode()==2) {
       res = brfdata.mesh[i].AddFrameMatchPosOrDie(m[h],j);
