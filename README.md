@@ -46,6 +46,17 @@ The purpose of this library is, to have a 3D view to show certain characters, it
 
 ### Usage
 
-TODO: add usage cases here
-TODO: create full test scenario like in MB-Studio
+```python
+from openbrf import OpenBrf
+
+openbrf = OpenBrf()
+openbrf.setModPath(b"/home/djaessel/.steam/debian-installation/steamapps/common/MountBlade Warband/Modules/Native/")
+openbrf.selectItemMesh(b"club")
+openbrf.closeApp()
+```
+With the above code you can start up the library, change the module path and show the "club" mesh.  
+And finally close the library again.  
+
+For more functions see the openbrf.py file.
+
 
