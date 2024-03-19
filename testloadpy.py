@@ -23,22 +23,21 @@ def start_lib(lib):
 def extra(lib):
     time.sleep(5)
 
-    lib.SetModPath(b"/home/djaessel/.steam/debian-installation/steamapps/common/MountBlade Warband/Modules/NordInvasion/")
+    lib.SetModPath(b"/home/djaessel/.steam/debian-installation/steamapps/common/MountBlade Warband/Modules/Native/")
 
     print("GET READY")
 
     time.sleep(5)
-
-    name = b"club"
-    kind = 0
-    res = lib.SelectItemByNameAndKind(name, kind)
-    print("RESULT:", res)
+    res = lib.SelectItemByNameAndKind(b"club", 0)
+    #print("RESULT:", res)
 
     time.sleep(5)
+    res = lib.SelectItemByNameAndKind(b"sledgehammer", 0)
+    #print("RESULT:", res)
 
-    res = lib.SelectItemByNameAndKindFromCurFile(name, kind)
+    time.sleep(5)
+    res = lib.SelectItemByNameAndKind(b"military_hammer", 0)
     print("RESULT:", res)
-
 
 main()
 

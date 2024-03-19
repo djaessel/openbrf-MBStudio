@@ -108,22 +108,22 @@ void MainWindow::displayInfo(QString st,int howlong){
 
 bool MainWindow::maybeSave()
 {
-	if (isModified) {
+    if (isModified) {
 
-		QMessageBox::StandardButton ret;
-		ret = QMessageBox::warning(this, tr("OpenBrf"),
-		                           tr("%1 been modified.\n"
-		                              "Save changes?").arg((editingRef)?tr("Internal reference objects have"):tr("The dataset has")),
-		                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		if (ret == QMessageBox::Save) {
-			return save();
-		}
-		else if (ret == QMessageBox::Cancel)
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(this, tr("OpenBrf"),
+                                   tr("%1 been modified.\n"
+                                      "Save changes?").arg((editingRef)?tr("Internal reference objects have"):tr("The dataset has")),
+                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        if (ret == QMessageBox::Save) {
+            return save();
+        }
+        else if (ret == QMessageBox::Cancel)
 			return false;
-	}
+    }
 
 
-	return maybeSaveHitboxes();
+    return maybeSaveHitboxes();
 }
 
 bool MainWindow::maybeSaveHitboxes()
@@ -4442,7 +4442,8 @@ void MainWindow::setUseAlphaCommands(bool mode){
 
 /* method created by Johandros */
 void MainWindow::selectTypeAndIndex(int type, int index) {
-	selector->selectOne(type, index);
+    selector->selectOne(type, index);
+    this->refreshIniAct->trigger(); // hack fix Johandros
 }
 
 /* method created by Johandros */
@@ -5009,9 +5010,8 @@ bool MainWindow::loadFile(const QString &_fileName)
 	fileName.replace("\\","/");
 	//QMessageBox::information(this, "OpenBRF",tr("Loading %1.").arg(_fileName));
 
-	if (!maybeSave()) 
-		return false;
-	setEditingRef(false);
+    //if (!maybeSave()) return false;
+    setEditingRef(false);
 
 	if (!brfdata.Load(fileName.toStdWString().c_str())) {
 		QMessageBox::information(this, "OpenBRF",
@@ -5026,9 +5026,9 @@ bool MainWindow::loadFile(const QString &_fileName)
 		updateSel();
 		//glWidget->selectNone();
 		//selector->setCurrentIndex(100); // for some reason, if I set the 0 message is not sent
-		int first = brfdata.FirstToken();
-		if (first>=0) 
-			selectOne(first, 0);
+        int first = brfdata.FirstToken();
+        if (first>=0)
+            selectOne(first, 0);
 
 		//scanBrfDataForMaterials(brfdata);
 
@@ -5098,13 +5098,13 @@ void MainWindow::goUsedBy(){
 }
 
 void MainWindow::selectBrfData(){
-	if (!maybeSave()) return;
+    if (!maybeSave()) return;
 	loadIni(1);
 
 	while (1){
-		AskSelectBRFDialog d(this);
-		connect(d.openModuleIniButton(),SIGNAL(clicked()),this,SLOT(openModuleIniFile()));
-		for (unsigned int k = 0; k<inidata.file.size(); k++){
+        AskSelectBRFDialog d(this);
+        connect(d.openModuleIniButton(),SIGNAL(clicked()),this,SLOT(openModuleIniFile()));
+        for (unsigned int k = 0; k<inidata.file.size(); k++){
 			int h = inidata.origin[k]==IniData::MODULE_RES?0:2;
 			QString shortName = inidata.filename[k];
 			shortName = QString("%1. %2")
@@ -5119,7 +5119,7 @@ void MainWindow::selectBrfData(){
 					shortName.append(QString(" (%2+%1)").arg(s-u).arg(u));
 				}
 			}
-			d.addName(h,shortName,inidata.filename[k]);
+            d.addName(h,shortName,inidata.filename[k]);
 
 		}
 		QDir dir(inidata.modPath);
@@ -5133,18 +5133,19 @@ void MainWindow::selectBrfData(){
 		for (int i=0; i<list.size(); i++){
 			QString name = QFileInfo(list[i]).baseName();
 			QString fullname = dir.absoluteFilePath(list[i]);
-			if (inidata.findFile(fullname)==-1)
-				d.addName(1, name ,fullname);
-		}
+            if (inidata.findFile(fullname)==-1){
+                d.addName(1, name ,fullname);
+            }
+        }
 
 		//for (int dir.count()
-		d.doExec();
-		if (d.loadMe=="???1") { loadIni(4); continue; }
-		if (d.loadMe=="???2") { refreshIni(); continue; }
+        d.doExec();
+        if (d.loadMe=="???1") { loadIni(4); continue; }
+        if (d.loadMe=="???2") { refreshIni(); continue; }
 
-		if (!d.loadMe.isEmpty()){
-			loadFile(d.loadMe);
-		}
+        if (!d.loadMe.isEmpty()){
+            loadFile(d.loadMe);
+        }
 		break;
 	}
 }
@@ -5948,6 +5949,8 @@ bool MainWindow::searchIniExplicit(QString name, int type, bool cr)
 			selectCurManyIndicesByList(idxs);
 			found = !found;//true //check maybe some more
 		}
+
+        this->refreshIniAct->trigger(); // hack fix Johandros
 	}
 	return found;
 }
@@ -5983,8 +5986,9 @@ bool MainWindow::searchIni(){
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	if (maybeSave()) event->accept();
-	else event->ignore();
+    //if (maybeSave()) event->accept();
+    //else event->ignore();
+    event->accept();
 }
 
 void MainWindow::newFile(){
