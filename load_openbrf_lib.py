@@ -55,6 +55,9 @@ def run():
         print("Loading openBrf library...")
         time.sleep(5)
 
+    errorMessages = ff.getvalue().decode('utf-8')
+    #print('Got stderr: "{0}"'.format(errorMessages))
+
     return lib
 
 
@@ -68,6 +71,6 @@ def callFunc(callback, *argv):
     with stderr_redirector(ff):
         callback(lib, argv)
 
-    #errorMessages = ff.getvalue().decode('utf-8')
+    errorMessages = ff.getvalue().decode('utf-8')
     #print('Got stderr: "{0}"'.format(errorMessages))
 
