@@ -7,6 +7,10 @@ QT += xml
 
 CONFIG += exceptions
 
+# to suppress console output
+DEFINES += QT_NO_DEBUG_OUTPUT
+DEFINES += QT_NO_INFO_OUTPUT
+DEFINES += QT_NO_WARNING_OUTPUT
 
 VCGLIB = dependencies/vcglib # v1.0.1
 

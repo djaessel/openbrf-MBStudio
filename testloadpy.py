@@ -8,9 +8,6 @@ def main():
     x = threading.Thread(target=start_lib, args=(lib,))
     x.start()
 
-    #y = threading.Thread(target=extra, args=(lib,))
-    #y.start()
-    
     extra(lib)
 
 
@@ -37,7 +34,10 @@ def extra(lib):
 
     time.sleep(5)
     res = lib.SelectItemByNameAndKind(b"military_hammer", 0)
-    print("RESULT:", res)
+    #print("RESULT:", res)
+
+    time.sleep(5)
+    lib.CloseApp()
 
 main()
 
