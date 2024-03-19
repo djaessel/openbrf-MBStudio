@@ -11,6 +11,7 @@ import tempfile
 lib = CDLL("./libopenBrf.so")
 c_stderr = c_void_p.in_dll(lib, 'stderr')
 
+ff = io.BytesIO()
 
 @contextmanager
 def stderr_redirector(stream):
@@ -46,16 +47,15 @@ def stderr_redirector(stream):
         os.close(saved_stderr_fd)
 
 
-def main():
-    f = io.BytesIO()
-    with stderr_redirector(f):
+def run():
+    with stderr_redirector(ff):
         x = threading.Thread(target=start_lib, args=(lib,))
         x.start()
 
-        modiferCode(lib)
+        print("Loading openBrf library...")
+        time.sleep(5)
 
-    errorMessages = f.getvalue().decode('utf-8')
-    #print('Got stderr: "{0}"'.format(errorMessages))
+    return lib
 
 
 def start_lib(lib):
@@ -64,32 +64,10 @@ def start_lib(lib):
     lib.StartExternal(len(args), args)
 
 
-def modiferCode(lib):
-    print("Loading openBrf...")
+def callFunc(callback, *argv):
+    with stderr_redirector(ff):
+        callback(lib, argv)
 
-    time.sleep(5)
-    print("Changing mod path...")
-    lib.SetModPath(b"/home/djaessel/.steam/debian-installation/steamapps/common/MountBlade Warband/Modules/Native/")
-
-    #time.sleep(5)
-    #print("Selecting club...")
-    #res = lib.SelectItemByNameAndKind(b"club", 0)
-    #print("RESULT:", res)
-
-    #time.sleep(5)
-    #print("Selecting sledgehammer...")
-    #res = lib.SelectItemByNameAndKind(b"sledgehammer", 0)
-    #print("RESULT:", res)
-
-    time.sleep(5)
-    print("Selecting military_hammer...")
-    res = lib.SelectItemByNameAndKind(b"military_hammer", 0)
-    #print("RESULT:", res)
-
-    print("Closing app...")
-    time.sleep(5)
-    lib.CloseApp()
-
-
-main()
+    #errorMessages = ff.getvalue().decode('utf-8')
+    #print('Got stderr: "{0}"'.format(errorMessages))
 
