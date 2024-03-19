@@ -65,24 +65,26 @@ def start_lib(lib):
 
 
 def modiferCode(lib):
+    print("Changing mod path...")
     time.sleep(5)
-
     lib.SetModPath(b"/home/djaessel/.steam/debian-installation/steamapps/common/MountBlade Warband/Modules/Native/")
 
-    print("GET READY")
-
+    print("Selecting club...")
     time.sleep(5)
     res = lib.SelectItemByNameAndKind(b"club", 0)
     #print("RESULT:", res)
 
+    print("Selecting sledgehammer...")
     time.sleep(5)
     res = lib.SelectItemByNameAndKind(b"sledgehammer", 0)
     #print("RESULT:", res)
 
+    print("Selecting military_hammer...")
     time.sleep(5)
     res = lib.SelectItemByNameAndKind(b"military_hammer", 0)
     #print("RESULT:", res)
 
+    print("Closing app...")
     time.sleep(5)
     lib.CloseApp()
 
