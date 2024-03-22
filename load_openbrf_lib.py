@@ -47,6 +47,8 @@ def stderr_redirector(stream):
         os.close(saved_stderr_fd)
 
 
+x = None
+
 def run():
     with stderr_redirector(ff):
         x = threading.Thread(target=start_lib, args=(lib,))
@@ -64,7 +66,13 @@ def run():
 def start_lib(lib):
     args = (c_char_p * 1)()
     args[0] = b""
-    return lib.StartExternal(len(args), args)
+    lib.StartExternal(len(args), args)
+    print("DONE")
+
+
+def closer():
+    if x != None:
+        x.join()
 
 
 def callFunc(callback, *argv):

@@ -125,6 +125,7 @@ class OpenBrf():
     def closeApp(self):
         if OpenBrf.opened:
             openBrfLib.callFunc(CloseApp)
+            openBrfLib.closer()
             OpenBrf.opened = False
 
 

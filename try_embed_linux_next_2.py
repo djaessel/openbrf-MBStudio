@@ -1,3 +1,8 @@
+import time
+import signal
+
+process = None
+
 def get_window_id(name):
     import Xlib.display
 
@@ -13,16 +18,32 @@ def get_window_id(name):
         if window.get_wm_name() == name:
             return window_id
 
+def close_openbrf():
+    print("Close openBrf")
+    if process != None:
+        process.send_signal(signal.SIGINT)
+        #process.wait()
+    with open("piper.txt", "w") as f:
+        f.write("exit")
+
+
+def select_club():
+    with open("piper.txt", "w") as f:
+        f.write("select:mesh:club")
+
 
 def run_app(window_id):
-    from PyQt5.QtCore import Qt
-    from PyQt5.QtGui import QWindow
-    from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication, QPushButton
+    from PySide6.QtCore import Qt, QUrl
+    from PySide6.QtGui import QWindow
+    from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QPushButton
+    from PySide6.QtQuickWidgets import QQuickWidget
 
     app = QApplication([])
     main_widget = QWidget()
     main_widget.setGeometry(0, 0, 1000, 800)
-    layout = QVBoxLayout(main_widget)
+    layout = QVBoxLayout()
+    layout2 = QVBoxLayout()
+    layout3 = QHBoxLayout(main_widget)
 
     window = QWindow.fromWinId(window_id)
     window.setFlag(Qt.FramelessWindowHint, True)
@@ -30,13 +51,28 @@ def run_app(window_id):
     widget.setWindowFlags(Qt.FramelessWindowHint)
     layout.addWidget(widget)
 
-    button = QPushButton('Close')
-    button.clicked.connect(main_widget.close)
-    layout.addWidget(button)
+    qmlWindow = QQuickWidget()
+    qmlWindow.setSource(QUrl.fromLocalFile("main.qml"))
+    qmlWindow.setResizeMode(QQuickWidget.SizeRootObjectToView)
+    layout2.addWidget(qmlWindow)
+
+    button1 = QPushButton('Select club')
+    button1.clicked.connect(select_club)
+    layout2.addWidget(button1)
+
+    button2 = QPushButton('Close')
+    button2.clicked.connect(close_openbrf)
+    button2.clicked.connect(main_widget.close)
+    layout2.addWidget(button2)
+
+    layout3.addLayout(layout)
+    layout3.addLayout(layout2)
 
     main_widget.show()
 
-    widget.update()
+    # glitch fix
+    time.sleep(1)
+    main_widget.setGeometry(0, 0, 800, 800)
 
     app.exec()
 
@@ -46,26 +82,26 @@ from openbrf import OpenBrf
 
 if __name__ == '__main__':
     ##window_id = get_window_id('Calculator')
-    ##window_id = 41943046
-    ##window_id = 50331661
-    ##window_id = 50331654
 
     #process = Popen(['./Testor'], stdout=PIPE, stderr=STDOUT)
     ##stdout, stderr = process.communicate()
     ###print(stdout)
     ##print(int(str(stderr).split(' ')[0][2:]))
 
-    #for line in iter(process.stdout.readline, b''):
-    #    print(">>>", line.rstrip())
-    #    window_id = int(line.rstrip())
-    #    break
+    process = Popen(['python3', 'testrunner.py'], stdout=PIPE, stderr=STDOUT)
 
-    ##window_id = 46137350
+    window_id = None
+    for line in iter(process.stdout.readline, b''):
+        print(">>>", line.rstrip())
+        try:
+            window_id = int(line.rstrip())
+            break
+        except:
+            pass
 
     #openbrf = OpenBrf()
     #window_id = int(openbrf.getCurWindowPtr())
     
-    window_id = 73400330
     if window_id:
         print(window_id)
         run_app(window_id)
