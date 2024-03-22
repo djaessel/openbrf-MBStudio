@@ -1,6 +1,7 @@
 /* OpenBRF -- by marco tarini. Provided under GNU General Public License */
 /* Edited for library usage by J.SYS aka Johandros */
 
+#include <QDebug>
 #include <QApplication>
 #include "mainwindow.h"
 #include <QMessageBox>
@@ -64,9 +65,10 @@ OPENBRF_EXPORT void CloseApp()
 		curApp->quit();
 }
 
-OPENBRF_EXPORT quintptr GetCurWindowPtr()
+extern "C" int GetCurWindowPtr()
 {
-    return (quintptr)curWindow->winId();
+    //printf("%llu\n", curWindow->winId());
+    return (int)curWindow->winId();
 }
 
 OPENBRF_EXPORT void SetModPath(char* modPath)

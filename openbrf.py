@@ -84,15 +84,16 @@ class OpenBrf():
             openBrfLib.run()
 
 
-    def isCurHWndShown(self) -> bool:
+    def isCurHWndShown(self):
         if OpenBrf.opened:
             return openBrfLib.callFunc(IsCurHWndShown)
         return False
 
 
-    def getCurWindowPtr(self) -> int:
-        if OpenBrf.opened and self.isCurHWndShown():
+    def getCurWindowPtr(self):
+        if OpenBrf.opened: #and self.isCurHWndShown():
             return openBrfLib.callFunc(GetCurWindowPtr)
+        print("ERROR")
         return 0
 
 

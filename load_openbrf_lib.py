@@ -64,13 +64,14 @@ def run():
 def start_lib(lib):
     args = (c_char_p * 1)()
     args[0] = b""
-    lib.StartExternal(len(args), args)
+    return lib.StartExternal(len(args), args)
 
 
 def callFunc(callback, *argv):
     with stderr_redirector(ff):
-        callback(lib, argv)
+        ret = callback(lib, argv)
 
     errorMessages = ff.getvalue().decode('utf-8')
     #print('Got stderr: "{0}"'.format(errorMessages))
+    return ret
 

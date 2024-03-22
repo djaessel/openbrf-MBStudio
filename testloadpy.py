@@ -52,7 +52,7 @@ def main():
         x = threading.Thread(target=start_lib, args=(lib,))
         x.start()
 
-        modiferCode(lib)
+    modiferCode(lib)
 
     errorMessages = f.getvalue().decode('utf-8')
     #print('Got stderr: "{0}"'.format(errorMessages))
