@@ -1,3 +1,4 @@
+import os
 import time
 import signal
 
@@ -91,18 +92,26 @@ if __name__ == '__main__':
     process = Popen(['python3', 'testrunner.py'], stdout=PIPE, stderr=STDOUT)
 
     window_id = None
-    for line in iter(process.stdout.readline, b''):
-        print(">>>", line.rstrip())
-        try:
-            window_id = int(line.rstrip())
-            break
-        except:
-            pass
+    #for line in iter(process.stdout.readline, b''):
+    #    print(">>>", line.rstrip())
+    #    try:
+    #        window_id = int(line.rstrip())
+    #        break
+    #    except:
+    #        pass
+
+    while not os.access("piper.txt", os.R_OK):
+        time.sleep(1)
+    
+    try:
+        with open("piper.txt") as f:
+            window_id = int(f.read())
+    except:
+        window_id = None
 
     #openbrf = OpenBrf()
     #window_id = int(openbrf.getCurWindowPtr())
     
     if window_id:
-        print(window_id)
         run_app(window_id)
 

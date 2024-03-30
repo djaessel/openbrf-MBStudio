@@ -10,7 +10,7 @@ Rectangle {
         id: addButton
 	anchors.centerIn: parent
         text: "TEST"
-        flat: true
+        flat: false
 	palette {
             button: "black"
 	    buttonText: "green"

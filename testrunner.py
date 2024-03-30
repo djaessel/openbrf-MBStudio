@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import threading
@@ -30,22 +31,29 @@ def handlerTerminate(signal_received, frame):
 
 
 def check_commands(openBrf):
-    while True:
-        time.sleep(5)
+    running = True
+    file = "piper.txt"
+    while running:
+        time.sleep(2)
         changed = False
-        with open("piper.txt", "r") as f:
-            txt = f.read()
+       
+        if os.access(file, os.R_OK):
+            with open(file) as f:
+                txt = f.read()
+        
             if txt.startswith("select:mesh:"):
                 openbrf.selectItemMesh(txt.split(':')[2].encode('ascii'))
                 changed = True
             elif txt == "exit":
-                openbBrf.closeApp()
-                sys.exit()
+                openBrf.closeApp()
+                running = False
 
-        if changed:
-            time.sleep(1)
-            with open("piper.txt", "w") as f:
-                f.write("")
+            if changed:
+                time.sleep(1)
+                with open(file, "w") as f:
+                    f.write("")
+
+    os.remove(file)
 
 
 if __name__ == '__main__':
@@ -59,7 +67,10 @@ if __name__ == '__main__':
     
     wid = openbrf.getCurWindowPtr()
     print(wid)
+    with open("piper.txt", "w") as f:
+        f.write(str(wid))
 
     x = threading.Thread(target=check_commands, args=(openbrf,))
     x.start()
+    x.join()
 
