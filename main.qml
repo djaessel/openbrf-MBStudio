@@ -1,23 +1,13 @@
-import QtQuick 2.0
-import QtQuick.Window 2.0
-import QtQuick.Controls 2.0
+import QtQuick 2.2
+import QtQuick.Window 2.2
+import QtQuick.Controls 2.2
 
 Rectangle {
-    anchors.fill: parent
-    color: "red"
+    color: "grey"
 
-    Button {
-        id: addButton
-	anchors.centerIn: parent
-        text: "TEST"
-        flat: false
-	palette {
-            button: "black"
-	    buttonText: "green"
-        }
-        onClicked: {
-            console.log("HELP ME")
-            addButton.text = "HELP ME"
-        }
+    Text {
+        text: "Qt Quick Text"
+        font.pixelSize: 32
+        anchors.centerIn: parent
     }
 }

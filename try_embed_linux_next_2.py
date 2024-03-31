@@ -35,13 +35,14 @@ def select_club():
 
 def run_app(window_id):
     from PySide6.QtCore import Qt, QUrl
-    from PySide6.QtGui import QWindow
+    from PySide6.QtGui import QWindow, QColor, QSurfaceFormat
     from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QPushButton
     from PySide6.QtQuickWidgets import QQuickWidget
 
     app = QApplication([])
     main_widget = QWidget()
     main_widget.setGeometry(0, 0, 1000, 800)
+    main_widget.setStyleSheet("background-color: 'grey'")
     layout = QVBoxLayout()
     layout2 = QVBoxLayout()
     layout3 = QHBoxLayout(main_widget)
@@ -52,19 +53,28 @@ def run_app(window_id):
     widget.setWindowFlags(Qt.FramelessWindowHint)
     layout.addWidget(widget)
 
+    format = QSurfaceFormat()
+    format.setAlphaBufferSize(8)
     qmlWindow = QQuickWidget()
-    qmlWindow.setSource(QUrl.fromLocalFile("main.qml"))
+    qmlWindow.setFormat(format)
+    qmlWindow.setWindowFlags(Qt.FramelessWindowHint)
+    qmlWindow.setAttribute(Qt.WA_AlwaysStackOnTop);
+    qmlWindow.setAttribute(Qt.WA_TranslucentBackground)
+    qmlWindow.setClearColor(QColor(Qt.transparent))
     qmlWindow.setResizeMode(QQuickWidget.SizeRootObjectToView)
-    layout2.addWidget(qmlWindow)
+    qmlWindow.setSource(QUrl.fromLocalFile("main.qml"))
+
 
     button1 = QPushButton('Select club')
     button1.clicked.connect(select_club)
-    layout2.addWidget(button1)
 
     button2 = QPushButton('Close')
     button2.clicked.connect(close_openbrf)
     button2.clicked.connect(main_widget.close)
     layout2.addWidget(button2)
+
+    layout2.addWidget(button1)
+    layout2.addWidget(qmlWindow)
 
     layout3.addLayout(layout)
     layout3.addLayout(layout2)
@@ -73,7 +83,7 @@ def run_app(window_id):
 
     # glitch fix
     time.sleep(1)
-    main_widget.setGeometry(0, 0, 800, 800)
+    main_widget.setGeometry(0, 0, 1100, 900)
 
     app.exec()
 
