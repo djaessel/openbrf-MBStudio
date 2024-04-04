@@ -54,6 +54,7 @@ public:
 
     void addMeshByNameToXViewMesh(char* meshName, int bone = 0, int skeleton = 0, int carryPosition = -1/*, bool isAtOrigin = true*/, bool mirror = false, char* material = NULL, uint vertColor = 0);
     void addLastSelectedToXViewMesh(int bone = 0, int skeleton = 0, int carryPosition = -1/*, bool isAtOrigin = true*/, bool mirror = false, char* material = NULL, uint vertColor = 0);
+    bool clear3DView();
 
 	bool hasTextQLineEdit(QLineEdit* le);
 
@@ -80,7 +81,7 @@ public:
 	int loadModAndDump(QString modpath, QString file);
 
 	int GetFirstUnusedRefLetter() const;
-	bool loadFile(const QString &fileName);
+    bool loadFile(const QString &fileName, bool selectFirst = true);
 
 	static int getLanguageOption();
 	QString getNextTranslatorFilename(){return nextTranlationFilename;};

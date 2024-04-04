@@ -5004,7 +5004,7 @@ void MainWindow::inidataChanged(){
 	selector->setIniData(NULL,curFileIndex);
 }
 
-bool MainWindow::loadFile(const QString &_fileName)
+bool MainWindow::loadFile(const QString &_fileName, bool selectFirst)
 {
 	QString fileName = _fileName;
 	fileName.replace("\\","/");
@@ -5024,10 +5024,10 @@ bool MainWindow::loadFile(const QString &_fileName)
 		selector->iniDataWaitsSaving = false;
         setCurrentFile(fileName);
 		updateSel();
-		//glWidget->selectNone();
+        glWidget->selectNone();
 		//selector->setCurrentIndex(100); // for some reason, if I set the 0 message is not sent
         int first = brfdata.FirstToken();
-        if (first>=0)
+        if (selectFirst && first>=0)
             selectOne(first, 0);
 
 		//scanBrfDataForMaterials(brfdata);
@@ -5901,6 +5901,16 @@ bool MainWindow::refreshSkeletonBodiesXml(){
 	                     +BrfData::LastHitBoxesLoadSaveError() );
 
 	return false;
+}
+
+bool MainWindow::clear3DView()
+{
+    //this->selector->clear();
+    //inidata.loadAll(4);
+    loadFile(this->curFile, false);
+    updateGl();
+    //this->refreshIniAct->trigger(); // hack fix Johandros
+    return true;
 }
 
 bool MainWindow::searchIniExplicit(QString name, int type, bool cr)

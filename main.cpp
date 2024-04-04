@@ -117,6 +117,13 @@ OPENBRF_EXPORT bool SelectItemByNameAndKindFromCurFile(char* name, int kind = 0)
 	return found;
 }
 
+OPENBRF_EXPORT bool Clear3DView()
+{
+    if (CurWindowIsShown())
+        return curWindow->clear3DView();
+    return false;
+}
+
 OPENBRF_EXPORT bool AddMeshToXViewModel(char* meshName, int bone = 0, int skeleton = 0, int carryPosition = -1/*, bool isAtOrigin = true*/, bool mirror = false, char* material = NULL, uint vertColor = 0)
 {
     bool retur = SelectItemByNameAndKind(meshName);
